@@ -1,0 +1,6 @@
+# Install torch separately for your platform FIRST (see https://pytorch.org/get-started/locally/):
+#   pip install torch
+numpy
+tqdm
+transformers==4.29.2
+datasets<3.0
