@@ -1,0 +1,42 @@
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Dataset (auto-downloaded to assets/)
+assets/
+
+# Model checkpoints and weights
+*.pt
+*.pth
+*.bin
+*.ckpt
+checkpoints/
+
+# Huggingface / torch caches
+.cache/
+wandb/
+
+# Output plots (do not submit per assignment instructions)
+*.png
+*.pdf
+!CSE_151B_Summer_2026_A3.pdf
+
+# Keep training logs required for grading
+!results/**/*.txt
+
+# macOS
+.DS_Store
+
+.claude/
+CLAUDE.md
