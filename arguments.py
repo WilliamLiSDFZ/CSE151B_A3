@@ -42,11 +42,11 @@ def params():
     # Hyper-parameters for tuning
     parser.add_argument("--batch-size", default=16, type=int,
                 help="Batch size per GPU/CPU for training and evaluation.")
-    parser.add_argument("--learning-rate", default=1e-4, type=float,
+    parser.add_argument("--learning-rate", default=2e-5, type=float,
                 help="Model learning rate starting point.")
-    parser.add_argument("--hidden-dim", default=10, type=int,
+    parser.add_argument("--hidden-dim", default=150, type=int,
                 help="Model hidden dimension.")
-    parser.add_argument("--drop-rate", default=0.9, type=float,
+    parser.add_argument("--drop-rate", default=0.1, type=float,
                 help="Dropout rate for model training")
     parser.add_argument("--embed-dim", default=768, type=int,
                 help="The embedding dimension of pretrained LM.")
@@ -54,7 +54,7 @@ def params():
                 help="Epsilon for Adam optimizer.")
     parser.add_argument("--n-epochs", default=10, type=int,
                 help="Total number of training epochs to perform.")
-    parser.add_argument("--max-len", default=20, type=int,
+    parser.add_argument("--max-len", default=32, type=int,
                 help="maximum sequence length to look back")
 
     args = parser.parse_args()
