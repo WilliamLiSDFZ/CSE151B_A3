@@ -14,3 +14,4 @@ python main.py --task custom --reinit_n_layers 2
 
 # Task 3: contrastive learning (SupContrast / SimCLR). Larger batches usually help.
 python main.py --task supcon --batch-size 32
+python main.py --task supcon --batch-size 32 --simclr

@@ -12,8 +12,10 @@ def params():
                      "supcon: contrastive learning (SupContrast / SimCLR)")
 
     # optional fine-tuning techiques parameters
-    parser.add_argument("--reinit_n_layers", default=0, type=int, 
+    parser.add_argument("--reinit_n_layers", default=0, type=int,
                 help="number of layers that are reinitialized. Count from last to first.")
+    parser.add_argument("--simclr", action="store_true",
+                help="supcon task: use the unsupervised SimCLR loss instead of SupContrast")
     
     # Others
     parser.add_argument("--input-dir", default='assets', type=str, 

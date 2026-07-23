@@ -104,14 +104,37 @@ def supcon_train(args, model, datasets, tokenizer, out_file):
     #       classifier head is available as self.classify if you choose to reuse it.)
 
     # task1: load training split of the dataset
-    
+    train_dataloader = get_dataloader(args, datasets['train'], 'train')
+
     # task2: setup optimizer_scheduler in your model
+    model.setup_optimizer_scheduler(args, len(train_dataloader) * args.n_epochs)
 
-    # task3: write a training loop for SupConLoss function 
+    # task3: write a training loop for SupConLoss function
+    ce_criterion = nn.CrossEntropyLoss()
     for epoch_count in range(args.n_epochs):
-      #fill this in similar to baseline_train above
+      losses = 0
+      model.train()
 
-      run_eval(..., out_file=out_file, split='validation') 
+      for step, batch in progress_bar(enumerate(train_dataloader), total=len(train_dataloader)):
+        inputs, labels = prepare_inputs(batch)
+        # two forward passes = two dropout views of the same input (SimCSE-style augmentation)
+        emb1, logits1 = model(inputs, labels)
+        emb2, logits2 = model(inputs, labels)
+        features = torch.stack([emb1, emb2], dim=1)  # [bsz, n_views=2, feat_dim]
+
+        # without labels SupConLoss degenerates to the unsupervised SimCLR loss
+        con_loss = criterion(features) if args.simclr else criterion(features, labels)
+        # train the classifier head jointly so run_eval gets meaningful logits
+        ce_loss = 0.5 * (ce_criterion(logits1, labels) + ce_criterion(logits2, labels))
+        loss = con_loss + ce_loss
+        loss.backward()
+
+        model.optimizer.step()  # backprop to update the weights
+        model.scheduler.step()  # Update learning rate schedule
+        model.zero_grad()
+        losses += loss.item()
+
+      run_eval(args, model, datasets, tokenizer, out_file=out_file, split='validation')
       print(f'epoch {epoch_count} | losses {losses}')
       out_file.write(f'epoch {epoch_count} | losses {losses}\n') #IMPORTANT FOR AUTOGRADING - DO NOT CHANGE
 

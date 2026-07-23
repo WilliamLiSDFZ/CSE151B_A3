@@ -99,6 +99,7 @@ class SupConModel(ScenarioModel):
     super().__init__(args, tokenizer, target_size)
 
     # task1: initialize a linear head layer
+    self.head = nn.Linear(args.embed_dim, feat_dim)
 
   def forward(self, inputs, targets):
 
@@ -115,3 +116,15 @@ class SupConModel(ScenarioModel):
     be able to produce classification logits at eval time (see the note in supcon_train). How
     you reconcile that with this contrastive forward is your design choice.
     """
+    outputs = self.encoder(**inputs)
+    cls_token = outputs.last_hidden_state[:, 0, :]
+    dropped = self.dropout(cls_token)
+
+    if not self.training:
+      # eval: run_eval needs class logits (dropout is identity here)
+      return self.classify(dropped)
+
+    # train: normalized projection for the contrastive loss + logits so the
+    # classifier head is trained jointly (each call = one dropout view)
+    embedding = F.normalize(self.head(dropped), dim=1)
+    return embedding, self.classify(dropped)
