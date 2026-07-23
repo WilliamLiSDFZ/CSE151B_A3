@@ -74,6 +74,25 @@ class CustomModel(ScenarioModel):
     super().__init__(args, tokenizer, target_size)
 
     # task1: use initialization for setting different strategies/techniques to better fine-tune the BERT model
+    # Technique: re-initialize the last N encoder layers ("Advanced Techniques for
+    # Fine-tuning Transformers"). The top layers are the most specialized to the
+    # pretraining objective, so re-initializing them can ease downstream adaptation.
+    self.reinit_n_layers = args.reinit_n_layers
+    if self.reinit_n_layers > 0:
+      self._do_reinit()
+
+  def _init_weight_and_bias(self, module):
+    if isinstance(module, nn.Linear):
+      module.weight.data.normal_(mean=0.0, std=self.encoder.config.initializer_range)
+      if module.bias is not None:
+        module.bias.data.zero_()
+    elif isinstance(module, nn.LayerNorm):
+      module.bias.data.zero_()
+      module.weight.data.fill_(1.0)
+
+  def _do_reinit(self):
+    for n in range(self.reinit_n_layers):
+      self.encoder.encoder.layer[-(n + 1)].apply(self._init_weight_and_bias)
 
 class SupConModel(ScenarioModel):
   def __init__(self, args, tokenizer, target_size, feat_dim=768):
