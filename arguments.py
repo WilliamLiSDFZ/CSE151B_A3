@@ -25,7 +25,7 @@ def params():
                         help="Output directory where the model predictions and checkpoints are written.")
     parser.add_argument("--model", default='bert', type=str,
                         help="The model architecture to be trained or fine-tuned.")
-    parser.add_argument("--seed", default=42, type=int)
+    parser.add_argument("--seed", default=77, type=int)
     parser.add_argument("--dataset", default="amazon", type=str,
                         help="dataset", choices=['amazon'])
 
