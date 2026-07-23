@@ -5,8 +5,6 @@
 # knobs most worth tuning. Run tasks individually by commenting out the others.
 
 # Task 1: baseline BERT + classifier head, cross-entropy loss.
-# Tuned hyperparameters (lr 2e-5, drop 0.1, hidden-dim 150, max-len 32) are the
-# defaults in arguments.py, so no extra flags are needed.
 python main.py --task baseline
 
 # Task 2: custom fine-tuning technique (e.g. reinitialize the last N encoder layers).

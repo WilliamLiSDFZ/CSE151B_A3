@@ -7,9 +7,11 @@ from __future__ import print_function
 import torch
 import torch.nn as nn
 
+
 class SupConLoss(nn.Module):
     """Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
     It also supports the unsupervised contrastive loss in SimCLR"""
+
     def __init__(self, temperature=0.07, contrast_mode='all',
                  base_temperature=0.07):
         super(SupConLoss, self).__init__()
@@ -29,8 +31,6 @@ class SupConLoss(nn.Module):
         Returns:
             A loss scalar.
         """
-        # use the features' own device so the loss also works on non-CUDA
-        # accelerators (e.g. Apple MPS); the original cuda/cpu branch crashed there
         device = features.device
 
         if len(features.shape) < 3:
@@ -38,7 +38,7 @@ class SupConLoss(nn.Module):
                              'at least 3 dimensions are required')
         if len(features.shape) > 3:
             features = features.view(features.shape[0], features.shape[1], -1)
-        
+
         batch_size = features.shape[0]
         if labels is not None and mask is not None:
             raise ValueError('Cannot define both `labels` and `mask`')
