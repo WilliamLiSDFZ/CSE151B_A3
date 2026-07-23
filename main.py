@@ -14,34 +14,36 @@ from arguments import params
 from model import ScenarioModel, SupConModel, CustomModel
 from torch import nn
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available()
+                      else "mps" if torch.backends.mps.is_available() else "cpu")
 
 def baseline_train(args, model, datasets, tokenizer, out_file):
     criterion = nn.CrossEntropyLoss()  # combines LogSoftmax() and NLLLoss()
     # task1: setup train dataloader
-    train_dataloader = get_dataloader(...)
+    train_dataloader = get_dataloader(args, datasets['train'], 'train')
 
     # task2: attach an optimizer AND an lr scheduler to the model as model.optimizer
     #        and model.scheduler (the loop below calls model.optimizer.step() and
     #        model.scheduler.step(), so both must exist as attributes on the model).
-    
+    model.setup_optimizer_scheduler(args, len(train_dataloader) * args.n_epochs)
+
     # task3: write a training loop
     for epoch_count in range(args.n_epochs):
         losses = 0
         model.train()
 
-        for step, batch in progress_bar(...):
-            inputs, labels = prepare_inputs(...)
-            logits = model(...)
-            loss = criterion(...)
+        for step, batch in progress_bar(enumerate(train_dataloader), total=len(train_dataloader)):
+            inputs, labels = prepare_inputs(batch)
+            logits = model(inputs, labels)
+            loss = criterion(logits, labels)
             loss.backward()
 
             model.optimizer.step()  # backprop to update the weights
             model.scheduler.step()  # Update learning rate schedule
             model.zero_grad()
             losses += loss.item()
-    
-        run_eval(..., out_file=out_file, split='validation') 
+
+        run_eval(args, model, datasets, tokenizer, out_file=out_file, split='validation')
         print(f'epoch {epoch_count} | losses {losses}')
         out_file.write(f'epoch {epoch_count} | losses {losses}\n') #IMPORTANT FOR AUTOGRADING - DO NOT CHANGE
   

@@ -5,7 +5,7 @@
 # knobs most worth tuning. Run tasks individually by commenting out the others.
 
 # Task 1: baseline BERT + classifier head, cross-entropy loss.
-python main.py --task baseline
+python main.py --task baseline --learning-rate 2e-5 --drop-rate 0.1 --hidden-dim 150 --max-len 32
 
 # Task 2: custom fine-tuning technique (e.g. reinitialize the last N encoder layers).
 python main.py --task custom --reinit_n_layers 2
